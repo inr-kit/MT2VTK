@@ -1,5 +1,8 @@
 # MT2VTK: A tool for converting MCNP mesh tally to VTK mesh file
-version 0.2.7
+version 0.2.8
+=================
+updates: the mesh boundary problem has been solved. Version 0.2.7 used cell-center to produce the mesh, and data is located at the nodes. It results in inconsistency when plotting together with the geometry. Current verison 0.2.8 produces meshes exactly like MCNP mesh tally setup, and the data is located in the cell-center. 
+To plot the contour line in ParaView, you need to locate the data from cell to nodes. This can be done by using the filter "Cell date to  point data".
 =================
 
 MeshTally to VTK for MS Windows (tested on Win 7)
