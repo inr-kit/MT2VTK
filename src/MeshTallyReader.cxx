@@ -841,7 +841,9 @@ void MeshTallyReader::GetBinBoundaries(ifstream &fileStream, McnpTally& curTalDa
 
             if(!StringToFloat(cur, value))
                 continue;
-
+			//qiu store the node coordinates besides the cell-center coodinates.
+			curTalDat.NodeX.push_back(value);
+			
             if(first)
             {
                 first=false;
@@ -869,6 +871,8 @@ void MeshTallyReader::GetBinBoundaries(ifstream &fileStream, McnpTally& curTalDa
 
             if(!StringToFloat(cur, value))
                 continue;
+			//qiu store the node coordinates besides the cell-center coodinates.
+			curTalDat.NodeY.push_back(value);
 
             if(first)
             {
@@ -897,6 +901,8 @@ void MeshTallyReader::GetBinBoundaries(ifstream &fileStream, McnpTally& curTalDa
 
             if(!StringToFloat(cur, value))
                 continue;
+			//qiu store the node coordinates besides the cell-center coodinates.
+			curTalDat.NodeZ.push_back(value);
 
             if(first)
             {
@@ -1532,6 +1538,11 @@ bool MeshTallyReader::Write(int tallyNumber, WriteType wType)
             cout <<	"vtk file : " << outFileName << endl;
 
             ofstream outFile(outFileName.c_str());
+        
+			//get the node coorindates instead of cell-center coordinates
+			
+
+
 
             // write mesh
 	    ////////////////////
@@ -1539,31 +1550,40 @@ bool MeshTallyReader::Write(int tallyNumber, WriteType wType)
                     << "Karlsruhe Institute of Technology - mt2vtk\n"
                     << "ASCII\n"
                     << "DATASET STRUCTURED_GRID\n"
-                    << "DIMENSIONS " << dimX << " " << dimY << " " << dimZ << endl
-                    << "POINTS " << dimX * dimY * dimZ << " float\n";
+//                    << "DIMENSIONS " << dimX << " " << dimY << " " << dimZ << endl
+//                    << "POINTS " << dimX * dimY * dimZ << " float\n";
+                    << "DIMENSIONS " << curTal.NodeX.size() << " " << curTal.NodeY.size() << " " << curTal.NodeZ.size() << endl
+                    << "POINTS " << curTal.NodeX.size() * curTal.NodeY.size() * curTal.NodeZ.size() << " float\n";
 
             int lineBreakCount(0);
-            for(list<float>::const_iterator itZ=curTal.GetZBinBegin(); itZ!=curTal.GetZBinEnd(); itZ++)
+            //for(list<float>::const_iterator itZ=curTal.GetZBinBegin(); itZ!=curTal.GetZBinEnd(); itZ++)
+			for (int k=0; k<curTal.NodeZ.size(); k++ )
             {
-                for(list<float>::const_iterator itY=curTal.GetYBinBegin(); itY!=curTal.GetYBinEnd(); itY++)
+                //for(list<float>::const_iterator itY=curTal.GetYBinBegin(); itY!=curTal.GetYBinEnd(); itY++)
+				for (int j=0; j<curTal.NodeY.size(); j++ )
                 {
-                    for(list<float>::const_iterator itX=curTal.GetXBinBegin(); itX!=curTal.GetXBinEnd(); itX++)
+                    //for(list<float>::const_iterator itX=curTal.GetXBinBegin(); itX!=curTal.GetXBinEnd(); itX++)
+					for (int i=0; i<curTal.NodeX.size(); i++ )
                     {
                         if(++lineBreakCount > 3)
                         {
                             lineBreakCount = 1;
                             outFile << endl;
                         }
-                        outFile << myGeometryScalingFactor * (*itX) << " " <<
-                                   myGeometryScalingFactor * (*itY) << " " <<
-                                   myGeometryScalingFactor * (*itZ) << " ";
+                        //outFile << myGeometryScalingFactor * (*itX) << " " <<
+                        //           myGeometryScalingFactor * (*itY) << " " <<
+                        //           myGeometryScalingFactor * (*itZ) << " ";
+                        outFile << myGeometryScalingFactor *  curTal.NodeX[i] << " " <<
+                                   myGeometryScalingFactor *  curTal.NodeY[j]<< " " <<
+                                   myGeometryScalingFactor *  curTal.NodeZ[k]<< " ";
                     }
                 }
             }
 
             // write values
 	    /////////////////////
-            outFile << "\nPOINT_DATA " << curTal.XDimension() * curTal.YDimension() * curTal.ZDimension() << endl
+//            outFile << "\nPOINT_DATA " << curTal.XDimension() * curTal.YDimension() * curTal.ZDimension() << endl
+			  outFile << "\nCELL_DATA " << curTal.XDimension() * curTal.YDimension() * curTal.ZDimension() << endl
                     << "SCALARS scalars float\n"
                     << "LOOKUP_TABLE default\n";
 

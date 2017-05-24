@@ -4,6 +4,7 @@
 #include <list>
 #include <McnpParticleType.hxx>
 #include <McnpMeshGeometryType.hxx>
+#include <vector>
 
 using namespace std;
 
@@ -76,6 +77,7 @@ public:
     float GetMaxVal(float energy) const;
 
     float GetEnergyTick(int number) const;
+	std::vector <float>  NodeX, NodeY, NodeZ;
 
 
 private:
